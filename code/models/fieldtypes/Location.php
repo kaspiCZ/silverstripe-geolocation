@@ -72,31 +72,33 @@ class Location extends DBField implements CompositeDBField {
 	}
 
 	public function setValue($value, $record = null, $markChanged = true) {
-		// @todo Allow resetting value to NULL through Money $value field
+		// TODO @kaspiCZ refactor to handle only additional values and utilize parent::setValue
+		$lat = $this->nullValue();
+		$lng = $this->nullValue();
 		if ($value instanceof Location && $value->exists()) {
-			$this->setLatitude($value->getLatitude(), $markChanged);
-			$this->setLongditude($value->getLongditude(), $markChanged);
-			if($markChanged) $this->isChanged = true;
-		} else if($record && isset($record[$this->name . 'Latitude']) && isset($record[$this->name . 'Longditude'])) {
-			if($record[$this->name . 'Latitude'] && $record[$this->name . 'Longditude']) {
-				$this->setLatitude($record[$this->name . 'Latitude'], $markChanged);
-				$this->setLongditude($record[$this->name . 'Longditude'], $markChanged);
-			} else {
-				$this->value = $this->nullValue();
-			}
-			if($markChanged) $this->isChanged = true;
+			$lat = $value->getLatitude();
+			$lng = $value->getLongditude();
+		} else if(is_null($value)
+			&& array_key_exists($this->name . 'Latitude', $record)
+			&& array_key_exists($this->name . 'Longditude', $record)
+			&& is_numeric($record[$this->name . 'Latitude'])
+			&& is_numeric($record[$this->name . 'Longditude'])
+		) {
+			$lat = $record[$this->name . 'Latitude'];
+			$lng = $record[$this->name . 'Longditude'];
 		} else if (is_array($value)) {
 			if (array_key_exists('Latitude', $value)) {
-				$this->setLatitude($value['Latitude'], $markChanged);
+				$lat = $value['Latitude'];
 			}
 			if (array_key_exists('Longditude', $value)) {
-				$this->setLongditude($value['Longditude'], $markChanged);
+				$lng = $value['Longditude'];
 			}
-			if($markChanged) $this->isChanged = true;
-		} else {
-			// @todo Allow to reset a money value by passing in NULL
-			//user_error('Invalid value in Money->setValue()', E_USER_ERROR);
 		}
+
+		$this->setLatitude($lat, $markChanged);
+		$this->setLongditude($lng, $markChanged);
+
+		if($markChanged) $this->isChanged = true;
 	}
 
 	/**

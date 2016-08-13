@@ -43,43 +43,49 @@ class GeoLocation extends Location implements CompositeDBField {
 		}
                 parent::writeToManipulation($manipulation);
 	}
-	
+
 	public function addToQuery(&$query) {
 		parent::addToQuery($query);
 		$query->selectField(sprintf('"%sAddress"', $this->name));
 	}
 
 	public function setValue($value, $record = null, $markChanged = true) {
-		// @todo Allow resetting value to NULL through Money $value field
+		// TODO @kaspiCZ refactor to handle only additional values and utilize parent::setValue
+		$address = $this->nullValue();
+		$lat = $this->nullValue();
+		$lng = $this->nullValue();
+
 		if ($value instanceof GeoLocation && $value->exists()) {
-			$this->setAddress($value->getAddress(), $markChanged);
-			$this->setLatitude($value->getLatitude(), $markChanged);
-			$this->setLongditude($value->getLongditude(), $markChanged);
-			if($markChanged) $this->isChanged = true;
-		} else if($record && isset($record[$this->name . 'Address']) && isset($record[$this->name . 'Latitude']) && isset($record[$this->name . 'Longditude'])) {
-			if($record[$this->name . 'Address'] && $record[$this->name . 'Latitude'] && $record[$this->name . 'Longditude']) {
-				$this->setAddress($record[$this->name . 'Address'], $markChanged);
-				$this->setLatitude($record[$this->name . 'Latitude'], $markChanged);
-				$this->setLongditude($record[$this->name . 'Longditude'], $markChanged);
-			} else {
-				$this->value = $this->nullValue();
-			}
-			if($markChanged) $this->isChanged = true;
+			$address = $value->getAddress();
+			$lat = $value->getLatitude();
+			$lng = $value->getLongditude();
+		} else if(is_null($value) && array_key_exists($this->name . 'Address', $record)
+			&& array_key_exists($this->name . 'Latitude', $record)
+			&& array_key_exists($this->name . 'Longditude', $record)
+			&& is_string($record[$this->name . 'Address'])
+			&& is_numeric($record[$this->name . 'Latitude'])
+			&& is_numeric($record[$this->name . 'Longditude'])
+		) {
+			$address = $record[$this->name . 'Address'];
+			$lat = $record[$this->name . 'Latitude'];
+			$lng = $record[$this->name . 'Longditude'];
 		} else if (is_array($value)) {
 			if (array_key_exists('Address', $value)) {
-				$this->setAddress($value['Address'], $markChanged);
+				$address = $value['Address'];
 			}
 			if (array_key_exists('Latitude', $value)) {
-				$this->setLatitude($value['Latitude'], $markChanged);
+				$lat = $value['Latitude'];
 			}
 			if (array_key_exists('Longditude', $value)) {
-				$this->setLongditude($value['Longditude'], $markChanged);
+				$lng = $value['Longditude'];
 			}
-			if($markChanged) $this->isChanged = true;
-		} else {
-			// @todo Allow to reset a money value by passing in NULL
-			//user_error('Invalid value in Money->setValue()', E_USER_ERROR);
 		}
+
+		$this->setAddress($address, $markChanged);
+		$this->setLatitude($lat, $markChanged);
+		$this->setLongditude($lng, $markChanged);
+
+		if($markChanged) $this->isChanged = true;
 	}
 
 	/**
