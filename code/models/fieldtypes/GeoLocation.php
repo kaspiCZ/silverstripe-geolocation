@@ -12,20 +12,20 @@ class GeoLocation extends Location implements CompositeDBField {
 	 * @var string $getAddress()
 	 */
 	protected $address;
-	
+
 	/**
 	 * @param array
 	 */
 	static $composite_db = array(
 		"Address" => "Varchar(255)"
 	);
-	
+
 	public function __construct($name = null) {
 		parent::__construct($name);
 	}
-	
+
 	public function compositeDatabaseFields() {
-		return array_merge(self::$composite_db, parent::$composite_db);
+		return array_merge(self::$composite_db, parent::compositeDatabaseFields());
 	}
 
 	public function requireField() {
@@ -41,7 +41,8 @@ class GeoLocation extends Location implements CompositeDBField {
 		} else {
 			$manipulation['fields'][$this->name.'Address'] = DBField::create_field('Varchar', $this->getAddress())->nullValue();
 		}
-                parent::writeToManipulation($manipulation);
+
+		parent::writeToManipulation($manipulation);
 	}
 
 	public function addToQuery(&$query) {
