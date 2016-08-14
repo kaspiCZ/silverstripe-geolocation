@@ -47,7 +47,7 @@ class FullGeoLocation extends GeoLocation implements CompositeDBField
 
 	public function compositeDatabaseFields()
 	{
-		return array_merge(self::$composite_db, parent::$composite_db);
+		return array_merge(self::$composite_db, parent::compositeDatabaseFields());
 	}
 
 	public function writeToManipulation(&$manipulation)
