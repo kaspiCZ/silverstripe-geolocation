@@ -2,7 +2,7 @@
 
 /**
  * PostCodeLocation
- * 
+ *
  * @package geoform
  * @subpackage model
  */
@@ -32,12 +32,12 @@ class PostCodeLocation extends DBField implements CompositeDBField {
 	 * @var boolean $isChanged
 	 */
 	protected $isChanged = false;
-	
+
 	/**
 	 * @var string $locale
 	 */
 	protected $locale = null;
-	
+
 	/**
 	 * @param array
 	 */
@@ -47,11 +47,11 @@ class PostCodeLocation extends DBField implements CompositeDBField {
 		"Latitude" => 'Double',
 		"Longditude" => 'Double'
 	);
-	
+
 	public function __construct($name = null) {
 		parent::__construct($name);
 	}
-	
+
 	public function compositeDatabaseFields() {
 		return self::$composite_db;
 	}
@@ -69,26 +69,26 @@ class PostCodeLocation extends DBField implements CompositeDBField {
 		} else {
 			$manipulation['fields'][$this->name.'Postcode'] = DBField::create_field('Varchar', $this->getPostcode())->nullValue();
 		}
-		
+
 		if($this->getCountry()) {
 			$manipulation['fields'][$this->name.'Country'] = $this->prepValueForDB($this->getCountry());
 		} else {
 			$manipulation['fields'][$this->name.'Country'] = DBField::create_field('Varchar', $this->getCountry())->nullValue();
 		}
-		
+
 		if($this->getLatitude()) {
 			$manipulation['fields'][$this->name.'Latitude'] = $this->getLatitude();
 		} else {
 			$manipulation['fields'][$this->name.'Latitude'] = DBField::create_field('Double', $this->getLatitude())->nullValue();
 		}
-		
+
 		if($this->getLongditude()) {
 			$manipulation['fields'][$this->name.'Longditude'] = $this->getLongditude();
 		} else {
 			$manipulation['fields'][$this->name.'Longditude'] = DBField::create_field('Double', $this->getLongditude())->nullValue();
 		}
 	}
-	
+
 	public function addToQuery(&$query) {
 		parent::addToQuery($query);
 		$query->selectField(sprintf('"%sPostcode"', $this->name));
@@ -142,7 +142,7 @@ class PostCodeLocation extends DBField implements CompositeDBField {
 		$size = $size.'x'.$size;
 		$loc = $this->latitude.",".$this->longditude;
 		$marker = 'color:blue%7C'.$loc;
-		$imageurl = "https://maps.googleapis.com/maps/api/staticmap?center=".$loc."&size=".$size."&language=".i18n::get_tinymce_lang()."&markers=".$marker."&maptype=roadmap&zoom=14";
+		$imageurl = "https://maps.googleapis.com/maps/api/staticmap?v=3.26&center=".$loc."&size=".$size."&language=".i18n::get_tinymce_lang()."&markers=".$marker."&maptype=roadmap&zoom=14";
 		return '<img src="'.$imageurl.'" />';
 	}
 
@@ -152,7 +152,7 @@ class PostCodeLocation extends DBField implements CompositeDBField {
 	public function getPostcode() {
 		return $this->postcode;
 	}
-	
+
 	/**
 	 * @param string
 	 */
@@ -167,7 +167,7 @@ class PostCodeLocation extends DBField implements CompositeDBField {
 	public function getCountry() {
 		return $this->country;
 	}
-	
+
 	/**
 	 * @param string
 	 */
@@ -205,55 +205,55 @@ class PostCodeLocation extends DBField implements CompositeDBField {
 		$this->longditude = (double)$longditude;
 		if($markChanged) $this->isChanged = true;
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
 	public function exists() {
 		return ($this->getPostcode() && $this->getCountry() && is_numeric($this->getLatitude()) && is_numeric($this->getLongditude()));
 	}
-	
+
 	public function isChanged() {
 		return $this->isChanged;
 	}
-		
+
 	/**
 	 * @param string $locale
 	 */
 	public function setLocale($locale) {
 		$this->locale = $locale;
 	}
-	
+
 	/**
 	 * @return string
 	 */
 	public function getLocale() {
 		return ($this->locale) ? $this->locale : i18n::get_locale();
 	}
-	
+
 	/**
 	 * Returns a CompositeField instance used as a default
 	 * for form scaffolding.
 	 *
 	 * Used by {@link SearchContext}, {@link ModelAdmin}, {@link DataObject::scaffoldFormFields()}
-	 * 
+	 *
 	 * @param string $title Optional. Localized title of the generated instance
 	 * @return FormField
 	 */
 	public function scaffoldFormField($title = null) {
 		$field = new PostCodeLocationField($this->name);
 		$field->setLocale($this->getLocale());
-		
+
 		return $field;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public function __toString() {
 		return (string)$this->getPostcode().', '.(string)$this->getCountry();
 	}
-        
+
 	/**
 	 * return a SQL Bounce for WHERE Clause
 	 */
@@ -274,7 +274,7 @@ class PostCodeLocation extends DBField implements CompositeDBField {
 	}
 
 	/**
-	 * return the Distance to the given 
+	 * return the Distance to the given
 	 */
 	public function getDistance($lat, $lng, $scale = 'km'){
 		return GeoFunctions::getDistance($this->getLatitude(), $this->getLongditude(), $lat, $long, $scale);

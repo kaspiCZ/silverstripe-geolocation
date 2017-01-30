@@ -2,7 +2,7 @@
 
 /**
  * Implements the "Money" pattern.
- * 
+ *
  * @package geoform
  * @subpackage model
  */
@@ -96,7 +96,7 @@ class GeoLocation extends Location implements CompositeDBField {
 		$size = $size.'x'.$size;
 		$loc = $this->latitude.",".$this->longditude;
 		$marker = 'color:blue%7C'.$loc;
-		$imageurl = "https://maps.googleapis.com/maps/api/staticmap?center=".$loc."&size=".$size."&language=".i18n::get_tinymce_lang()."&markers=".$marker."&maptype=roadmap&zoom=14";
+		$imageurl = "https://maps.googleapis.com/maps/api/staticmap?v=3.26&center=".$loc."&size=".$size."&language=".i18n::get_tinymce_lang()."&markers=".$marker."&maptype=roadmap&zoom=14";
 		return '<img src="'.$imageurl.'" />';
 	}
 
@@ -106,7 +106,7 @@ class GeoLocation extends Location implements CompositeDBField {
 	public function getAddress() {
 		return $this->address;
 	}
-	
+
 	/**
 	 * @param string
 	 */
@@ -114,32 +114,32 @@ class GeoLocation extends Location implements CompositeDBField {
 		$this->address = $address;
 		if($markChanged) $this->isChanged = true;
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
 	public function exists() {
 		return ($this->getAddress() && parent::exists());
 	}
-	
+
 	/**
 	 * Returns a CompositeField instance used as a default
 	 * for form scaffolding.
 	 *
 	 * Used by {@link SearchContext}, {@link ModelAdmin}, {@link DataObject::scaffoldFormFields()}
-	 * 
+	 *
 	 * @param string $title Optional. Localized title of the generated instance
 	 * @return FormField
 	 */
 	function scaffoldFormField($title = null) {
 		$field = new GeoLocationField($this->name);
 		$field->setLocale($this->getLocale());
-		
+
 		return $field;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public function __toString() {
 		return (string)$this->getAddress();

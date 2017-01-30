@@ -2,7 +2,7 @@
 
 /**
  * PostCodeLocation
- * 
+ *
  * @package geoform
  * @subpackage model
  */
@@ -22,12 +22,12 @@ class Location extends DBField implements CompositeDBField {
 	 * @var boolean $isChanged
 	 */
 	protected $isChanged = false;
-	
+
 	/**
 	 * @var string $locale
 	 */
 	protected $locale = null;
-	
+
 	/**
 	 * @param array
 	 */
@@ -35,11 +35,11 @@ class Location extends DBField implements CompositeDBField {
 		"Latitude" => 'Double',
 		"Longditude" => 'Double'
 	);
-	
+
 	public function __construct($name = null) {
 		parent::__construct($name);
 	}
-	
+
 	public function compositeDatabaseFields() {
 		return self::$composite_db;
 	}
@@ -57,14 +57,14 @@ class Location extends DBField implements CompositeDBField {
 		} else {
 			$manipulation['fields'][$this->name.'Latitude'] = DBField::create_field('Double', $this->getLatitude())->nullValue();
 		}
-		
+
 		if($this->getLongditude()) {
 			$manipulation['fields'][$this->name.'Longditude'] = $this->getLongditude();
 		} else {
 			$manipulation['fields'][$this->name.'Longditude'] = DBField::create_field('Double', $this->getLongditude())->nullValue();
 		}
 	}
-	
+
 	public function addToQuery(&$query) {
 		parent::addToQuery($query);
 		$query->selectField(sprintf('"%sLatitude"', $this->name));
@@ -108,7 +108,7 @@ class Location extends DBField implements CompositeDBField {
 		$size = $size.'x'.$size;
 		$loc = $this->latitude.",".$this->longditude;
 		$marker = 'color:blue%7C'.$loc;
-		$imageurl = "https://maps.googleapis.com/maps/api/staticmap?center=".$loc."&size=".$size."&language=".i18n::get_tinymce_lang()."&markers=".$marker."&maptype=roadmap&zoom=14";
+		$imageurl = "https://maps.googleapis.com/maps/api/staticmap?v=3.26&center=".$loc."&size=".$size."&language=".i18n::get_tinymce_lang()."&markers=".$marker."&maptype=roadmap&zoom=14";
 		return '<img src="'.$imageurl.'" />';
 	}
 
@@ -141,55 +141,55 @@ class Location extends DBField implements CompositeDBField {
 		$this->longditude = (double)$longditude;
 		if($markChanged) $this->isChanged = true;
 	}
-	
+
 	/**
 	 * @return boolean
 	 */
 	public function exists() {
 		return (is_numeric($this->getLatitude()) && is_numeric($this->getLongditude()));
 	}
-	
+
 	public function isChanged() {
 		return $this->isChanged;
 	}
-		
+
 	/**
 	 * @param string $locale
 	 */
 	public function setLocale($locale) {
 		$this->locale = $locale;
 	}
-	
+
 	/**
 	 * @return string
 	 */
 	public function getLocale() {
 		return ($this->locale) ? $this->locale : i18n::get_locale();
 	}
-	
+
 	/**
 	 * Returns a CompositeField instance used as a default
 	 * for form scaffolding.
 	 *
 	 * Used by {@link SearchContext}, {@link ModelAdmin}, {@link DataObject::scaffoldFormFields()}
-	 * 
+	 *
 	 * @param string $title Optional. Localized title of the generated instance
 	 * @return FormField
 	 */
 	public function scaffoldFormField($title = null) {
 		$field = new LocationField($this->name);
 		$field->setLocale($this->getLocale());
-		
+
 		return $field;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public function __toString() {
 		return (string)$this->getLatitude().', '.(string)$this->getLongditude();
 	}
-        
+
 	/**
 	 * return a SQL Bounce for WHERE Clause
 	 */
